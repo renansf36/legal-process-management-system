@@ -1,0 +1,77 @@
+{% extends "base/base.html" %}
+{% block content %}
+<div class="page-header">
+  <div>
+    <h1>{{ object.numero }}</h1>
+    <p class="text-secondary mb-0">{{ object.cliente.nome }} - {{ object.tribunal }} - {{ object.get_status_display }}</p>
+  </div>
+  <a class="btn btn-outline-primary" href="{% url 'processo_update' object.pk %}">Editar</a>
+</div>
+
+<div class="row g-4">
+  <div class="col-lg-7">
+    <section class="panel">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2>Movimentacoes</h2>
+        <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#movimentacaoModal">Nova</button>
+      </div>
+      <div id="movimentacoesList" class="list-group list-group-flush">
+        {% for item in object.movimentacoes.all %}
+          <div class="list-group-item px-0">
+            <strong>{{ item.titulo }}</strong>
+            <div class="small text-secondary">{{ item.data_evento }}{% if item.prazo %} - Prazo: {{ item.prazo }}{% endif %}</div>
+            <p class="mb-0">{{ item.descricao }}</p>
+          </div>
+        {% empty %}
+          <div class="text-secondary">Nenhuma movimentacao cadastrada.</div>
+        {% endfor %}
+      </div>
+    </section>
+  </div>
+  <div class="col-lg-5">
+    <section class="panel mb-4">
+      <h2>Upload de documentos</h2>
+      <form method="post" enctype="multipart/form-data" action="{% url 'documento_upload' object.pk %}">
+        {% csrf_token %}
+        {{ document_form.as_p }}
+        <button class="btn btn-primary" type="submit">Enviar PDFs</button>
+      </form>
+    </section>
+    <section class="panel mb-4">
+      <h2>Documentos</h2>
+      <div class="list-group list-group-flush">
+        {% for doc in object.documentos.all %}
+          <a class="list-group-item px-0" href="{{ doc.arquivo.url }}" target="_blank">{{ doc.titulo }}</a>
+        {% empty %}
+          <span class="text-secondary">Nenhum documento enviado.</span>
+        {% endfor %}
+      </div>
+    </section>
+    <section class="panel">
+      <h2>Consulta mock</h2>
+      <div class="small text-secondary">{{ tribunal_snapshot.tribunal }}</div>
+      <strong>{{ tribunal_snapshot.status_externo }}</strong>
+      <p class="mb-0">{{ tribunal_snapshot.ultima_movimentacao }}</p>
+    </section>
+  </div>
+</div>
+
+<div class="modal fade" id="movimentacaoModal" tabindex="-1">
+  <div class="modal-dialog">
+    <form class="modal-content ajax-movimentacao-form" action="{% url 'movimentacao_create_ajax' object.pk %}" method="post">
+      <div class="modal-header">
+        <h2 class="modal-title h5">Nova movimentacao</h2>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        {% csrf_token %}
+        {{ movimentacao_form.as_p }}
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline-secondary" type="button" data-bs-dismiss="modal">Cancelar</button>
+        <button class="btn btn-primary" type="submit">Salvar</button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

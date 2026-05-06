@@ -1,0 +1,20 @@
+{% extends "base/base.html" %}
+{% block content %}
+<div class="page-header">
+  <div>
+    <h1>{{ object.nome }}</h1>
+    <p class="text-secondary mb-0">{{ object.cpf_cnpj }} - {{ object.contato }}</p>
+  </div>
+  <a class="btn btn-outline-primary" href="{% url 'cliente_update' object.pk %}">Editar</a>
+</div>
+<section class="panel">
+  <h2>Processos vinculados</h2>
+  <div class="list-group list-group-flush">
+    {% for processo in object.processos.all %}
+      <a class="list-group-item px-0" href="{{ processo.get_absolute_url }}">{{ processo.numero }} - {{ processo.get_status_display }}</a>
+    {% empty %}
+      <span class="text-secondary">Nenhum processo vinculado.</span>
+    {% endfor %}
+  </div>
+</section>
+{% endblock %}

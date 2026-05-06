@@ -1,0 +1,57 @@
+{% extends "base/base.html" %}
+{% block title %}Dashboard{% endblock %}
+{% block content %}
+<div class="page-header">
+  <div>
+    <h1>Dashboard</h1>
+    <p class="text-secondary mb-0">Resumo operacional dos processos e prazos.</p>
+  </div>
+  <a class="btn btn-primary" href="{% url 'processo_create' %}">Novo processo</a>
+</div>
+
+<section class="metric-grid">
+  <div class="metric">
+    <span>Processos ativos</span>
+    <strong>{{ processos_ativos }}</strong>
+  </div>
+  <div class="metric">
+    <span>Prazos em 7 dias</span>
+    <strong>{{ prazos_proximos }}</strong>
+  </div>
+  <div class="metric">
+    <span>Clientes</span>
+    <strong>{{ clientes_total }}</strong>
+  </div>
+</section>
+
+<div class="row g-4 mt-1">
+  <div class="col-lg-7">
+    <section class="panel">
+      <h2>Status dos processos</h2>
+      <canvas id="statusChart" height="120"></canvas>
+    </section>
+  </div>
+  <div class="col-lg-5">
+    <section class="panel">
+      <h2>Movimentacoes recentes</h2>
+      <div class="list-group list-group-flush">
+        {% for item in movimentacoes_recentes %}
+          <a class="list-group-item px-0" href="{{ item.processo.get_absolute_url }}">
+            <strong>{{ item.titulo }}</strong>
+            <div class="small text-secondary">{{ item.processo.numero }} - {{ item.data_evento }}</div>
+          </a>
+        {% empty %}
+          <div class="text-secondary">Nenhuma movimentacao cadastrada.</div>
+        {% endfor %}
+      </div>
+    </section>
+  </div>
+</div>
+{% endblock %}
+{% block scripts %}
+{{ chart_labels|json_script:"chart-labels" }}
+{{ chart_values|json_script:"chart-values" }}
+<script>
+  renderStatusChart("statusChart", "chart-labels", "chart-values");
+</script>
+{% endblock %}

@@ -1,0 +1,12 @@
+{% extends "base/base.html" %}
+{% block content %}
+<section class="panel">
+  <h1 class="h4">Confirmar exclusao</h1>
+  <p>Deseja excluir <strong>{{ object }}</strong>?</p>
+  <form method="post">
+    {% csrf_token %}
+    <button class="btn btn-danger" type="submit">Excluir</button>
+    <button class="btn btn-outline-secondary" type="button" onclick="history.back()">Cancelar</button>
+  </form>
+</section>
+{% endblock %}

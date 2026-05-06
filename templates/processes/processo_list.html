@@ -1,0 +1,67 @@
+{% extends "base/base.html" %}
+{% block content %}
+<div class="page-header">
+  <h1>Processos</h1>
+  <div class="d-flex gap-2">
+    <a class="btn btn-outline-success" href="{% url 'processo_export' %}?{{ request.GET.urlencode }}">Exportar Excel</a>
+    <a class="btn btn-primary" href="{% url 'processo_create' %}">Novo processo</a>
+  </div>
+</div>
+<section class="panel">
+  <form class="row g-2 mb-3">
+    <div class="col-md">
+      <input class="form-control" name="q" value="{{ request.GET.q }}" placeholder="Numero, cliente ou tribunal">
+    </div>
+    <div class="col-md-3">
+      <select class="form-select" name="status">
+        <option value="">Todos os status</option>
+        {% for value,label in view.model.Status.choices %}
+          <option value="{{ value }}" {% if request.GET.status == value %}selected{% endif %}>{{ label }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="col-auto">
+      <button class="btn btn-outline-primary">Filtrar</button>
+    </div>
+  </form>
+  <div class="table-responsive">
+    <table class="table align-middle">
+      <thead><tr><th>Numero</th><th>Cliente</th><th>Tribunal</th><th>Status</th><th></th></tr></thead>
+      <tbody>
+        {% for processo in object_list %}
+          <tr>
+            <td>{{ processo.numero }}</td>
+            <td>{{ processo.cliente.nome }}</td>
+            <td>{{ processo.tribunal }}</td>
+            <td>
+              <select class="form-select form-select-sm status-select" data-url="{% url 'processo_status_ajax' processo.pk %}">
+                {% for value,label in view.model.Status.choices %}
+                  <option value="{{ value }}" {% if processo.status == value %}selected{% endif %}>{{ label }}</option>
+                {% endfor %}
+              </select>
+            </td>
+            <td class="text-end">
+              <button class="btn btn-sm btn-outline-info detail-button" data-url="{% url 'processo_detail_ajax' processo.pk %}" type="button">Detalhes</button>
+              <a class="btn btn-sm btn-outline-secondary" href="{{ processo.get_absolute_url }}">Abrir</a>
+            </td>
+          </tr>
+        {% empty %}
+          <tr><td colspan="5" class="text-secondary">Nenhum processo encontrado.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<div class="modal fade" id="detailsModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title h5">Detalhes do processo</h2>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body" id="detailsModalBody"></div>
+    </div>
+  </div>
+</div>
+{% endblock %}

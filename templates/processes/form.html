@@ -1,0 +1,14 @@
+{% extends "base/base.html" %}
+{% block content %}
+<div class="page-header">
+  <h1>{{ view.model|default:"Cadastro" }}</h1>
+</div>
+<form method="post" class="panel form-panel">
+  {% csrf_token %}
+  {{ form.as_p }}
+  <div class="d-flex gap-2">
+    <button class="btn btn-primary" type="submit">Salvar</button>
+    <button class="btn btn-outline-secondary" type="button" onclick="history.back()">Cancelar</button>
+  </div>
+</form>
+{% endblock %}
